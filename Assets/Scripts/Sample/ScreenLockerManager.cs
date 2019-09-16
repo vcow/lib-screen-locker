@@ -6,6 +6,8 @@ namespace Sample
 {
 	public class ScreenLockerManager : ScreenLockerManagerBase
 	{
+		protected override bool DontDestroyOnLoad => false;
+
 		protected override void InitManager(Canvas canvas, CanvasScaler canvasScaler, GraphicRaycaster graphicRaycaster)
 		{
 			canvas.renderMode = RenderMode.ScreenSpaceOverlay;
