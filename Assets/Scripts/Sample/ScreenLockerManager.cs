@@ -12,7 +12,7 @@ namespace Sample
 			canvas.sortingOrder = 10000;
 
 			canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-			canvasScaler.referenceResolution = new Vector2(1024, 768);
+			canvasScaler.referenceResolution = new Vector2(2048, 1536);
 			canvasScaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
 			canvasScaler.matchWidthOrHeight = 1;
 
