@@ -21,7 +21,7 @@ namespace Sample
 			graphicRaycaster.blockingObjects = GraphicRaycaster.BlockingObjects.All;
 		}
 
-		protected override void InitLocker(LockerType type, IScreenLocker locker)
+		protected override void InitLocker(IScreenLocker locker)
 		{
 		}
 	}

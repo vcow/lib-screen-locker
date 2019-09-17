@@ -112,12 +112,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _lockers:
-  - _type: 0
-    _prefab: {fileID: 3912597539800495033, guid: 056c35a24ca3769489243c76e3be1e0b,
-      type: 3}
-  - _type: 1
-    _prefab: {fileID: 8590264259063196296, guid: 858948812c36a734cbadcb34beac7536,
-      type: 3}
-  - _type: 2
-    _prefab: {fileID: 3672346047733730036, guid: a568e6dd3595c0b49829a9190c87070b,
-      type: 3}
+  - {fileID: 2880664744794138217, guid: 056c35a24ca3769489243c76e3be1e0b, type: 3}
+  - {fileID: 2808095505859084710, guid: 858948812c36a734cbadcb34beac7536, type: 3}
+  - {fileID: 1582843170605512372, guid: a568e6dd3595c0b49829a9190c87070b, type: 3}

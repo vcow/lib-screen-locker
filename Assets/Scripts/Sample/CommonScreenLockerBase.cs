@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using Base.Activatable;
 using Base.ScreenLocker;
@@ -9,9 +8,8 @@ namespace Sample
 {
 	[DisallowMultipleComponent]
 	[RequireComponent(typeof(CanvasGroup))]
-	public class ScreenLocker : MonoBehaviour, IScreenLocker
+	public abstract class CommonScreenLockerBase : ScreenLocker<CommonScreenLockerBase>
 	{
-		private ActivatableState _activatableState = ActivatableState.Inactive;
 		private bool _isStarted;
 		private CanvasGroup _canvasGroup;
 		private Coroutine _fadeRoutine;
@@ -36,32 +34,19 @@ namespace Sample
 			}
 		}
 
-		public void Activate(bool immediately = false)
+		public override void Activate(bool immediately = false)
 		{
 			Assert.IsFalse(this.IsActiveOrActivated());
 			ActivatableState = immediately ? ActivatableState.Active : ActivatableState.ToActive;
 			ValidateState();
 		}
 
-		public void Deactivate(bool immediately = false)
+		public override void Deactivate(bool immediately = false)
 		{
 			Assert.IsFalse(this.IsInactiveOrDeactivated());
 			ActivatableState = immediately ? ActivatableState.Inactive : ActivatableState.ToInactive;
 			ValidateState();
 		}
-
-		public ActivatableState ActivatableState
-		{
-			get => _activatableState;
-			private set
-			{
-				if (value == _activatableState) return;
-				_activatableState = value;
-				ActivatableStateChangedEvent?.Invoke(_activatableState);
-			}
-		}
-
-		public event Action<ActivatableState> ActivatableStateChangedEvent;
 
 		private void ValidateState()
 		{
@@ -99,7 +84,7 @@ namespace Sample
 				{
 					Assert.IsTrue(ActivatableState == ActivatableState.ToActive);
 					_canvasGroup.alpha = 1;
-					ActivatableStateChangedEvent?.Invoke(ActivatableState.Active);
+					ActivatableState = ActivatableState.Active;
 					break;
 				}
 
@@ -107,7 +92,7 @@ namespace Sample
 				{
 					Assert.IsTrue(ActivatableState == ActivatableState.ToInactive);
 					_canvasGroup.alpha = 0;
-					ActivatableStateChangedEvent?.Invoke(ActivatableState.Inactive);
+					ActivatableState = ActivatableState.Inactive;
 					break;
 				}
 

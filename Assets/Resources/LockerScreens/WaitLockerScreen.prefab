@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4467127124715559337}
   - component: {fileID: 4688400402488540539}
   - component: {fileID: 9103688355279934490}
-  - component: {fileID: 9005040757781254369}
+  - component: {fileID: 1582843170605512372}
   m_Layer: 5
   m_Name: WaitLockerScreen
   m_TagString: Untagged
@@ -85,7 +85,7 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
---- !u!114 &9005040757781254369
+--- !u!114 &1582843170605512372
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -94,7 +94,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3672346047733730036}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fccb2b1265684a9ba93587c180aad5da, type: 3}
+  m_Script: {fileID: 11500000, guid: 03388907fdfa4d79901c913844cd516f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &5777622731864712227
