@@ -9,22 +9,11 @@ using UnityEngine.UI;
 
 namespace Base.ScreenLocker
 {
-	[Serializable]
-	public class LockerRecord
-	{
-#pragma warning disable 649
-		[SerializeField] private LockerType _type;
-		[SerializeField] private GameObject _prefab;
-#pragma warning restore 649
-		public LockerType Type => _type;
-		public GameObject Prefab => _prefab;
-	}
-
 	[DisallowMultipleComponent]
 	[RequireComponent(typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster))]
 	public abstract class ScreenLockerManagerBase : MonoBehaviour, IScreenLockerManager
 	{
-		protected Dictionary<LockerType, GameObject> _screenPrefabs;
+		private Dictionary<LockerType, ScreenLocker> _screenPrefabs;
 		protected abstract bool DontDestroyOnLoad { get; }
 
 		private IScreenLocker _currentScreenLocker;
@@ -33,12 +22,12 @@ namespace Base.ScreenLocker
 		private int _lockId;
 
 #pragma warning disable 649
-		[SerializeField] private LockerRecord[] _lockers = new LockerRecord[0];
+		[SerializeField] private ScreenLocker[] _lockers = new ScreenLocker[0];
 #pragma warning restore 649
 
 		protected virtual void Awake()
 		{
-			_screenPrefabs = _lockers.ToDictionary(record => record.Type, record => record.Prefab);
+			_screenPrefabs = _lockers.ToDictionary(record => record.LockerType, record => record);
 
 			if (DontDestroyOnLoad)
 			{
@@ -51,7 +40,7 @@ namespace Base.ScreenLocker
 		protected abstract void InitManager(Canvas canvas, CanvasScaler canvasScaler,
 			GraphicRaycaster graphicRaycaster);
 
-		protected abstract void InitLocker(LockerType type, IScreenLocker locker);
+		protected abstract void InitLocker(IScreenLocker locker);
 
 		protected virtual void OnDestroy()
 		{
@@ -120,7 +109,7 @@ namespace Base.ScreenLocker
 				throw new Exception("Screen locker must implements IScreenLocker.");
 			}
 
-			InitLocker(type, locker);
+			InitLocker(locker);
 
 			if (locker.IsActive())
 			{
