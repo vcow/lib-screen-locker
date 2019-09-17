@@ -1,5 +1,5 @@
 # Screen locker
-Deploy with: git subtree push --prefix Assets/Scripts/Base/ScreenLocker origin 1.0.0  
+Deploy with: git subtree push --prefix Assets/Scripts/Base/ScreenLocker origin upm  
 Destination: https://github.com/vcow/lib-screen-locker.git  
 Dependencies:  
 - "vcow.base.activatable": "https://github.com/vcow/lib-activatable.git#1.0.0",
