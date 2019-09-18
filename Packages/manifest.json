@@ -51,7 +51,7 @@
   },
   "lock": {
     "vcow.base.activatable": {
-      "hash": "5951fd0a158383b04b65a38809e17adf0058f124",
+      "hash": "59e97900ba2525e12cf89abb7380adc8212ed2d8",
       "revision": "1.0.0"
     },
     "vcow.helpers.touch-helper": {
