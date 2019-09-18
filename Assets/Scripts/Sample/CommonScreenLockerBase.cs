@@ -6,7 +6,6 @@ using UnityEngine.Assertions;
 
 namespace Sample
 {
-	[DisallowMultipleComponent]
 	[RequireComponent(typeof(CanvasGroup))]
 	public abstract class CommonScreenLockerBase : ScreenLocker<CommonScreenLockerBase>
 	{

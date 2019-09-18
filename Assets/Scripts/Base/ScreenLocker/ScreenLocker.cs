@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Base.ScreenLocker
 {
+	[DisallowMultipleComponent]
 	public abstract class ScreenLocker : MonoBehaviour, IScreenLocker
 	{
 		public abstract void Activate(bool immediately = false);
