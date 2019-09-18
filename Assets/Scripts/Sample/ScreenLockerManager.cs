@@ -6,7 +6,7 @@ namespace Sample
 {
 	public class ScreenLockerManager : ScreenLockerManagerBase
 	{
-		protected override bool DontDestroyOnLoad => false;
+		protected override bool ManagerDontDestroyOnLoad => false;
 
 		protected override void InitManager(Canvas canvas, CanvasScaler canvasScaler, GraphicRaycaster graphicRaycaster)
 		{
