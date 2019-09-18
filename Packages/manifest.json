@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.modesttree.zenject": "8.0.0",
     "com.unity.2d.sprite": "1.0.0",
     "com.unity.2d.tilemap": "1.0.0",
     "com.unity.ads": "2.0.8",
@@ -57,5 +58,21 @@
       "hash": "25e7f0366d73f5ee722e7e66f1a8719423e33b58",
       "revision": "1.0.0"
     }
-  }
+  },
+  "scopedRegistries": [
+    {
+      "name": "Unity",
+      "url": "https://packages.unity.com",
+      "scopes": [
+        "com.unity"
+      ]
+    },
+    {
+      "name": "XCrew",
+      "url": "http://xcrew.dev",
+      "scopes": [
+        "com"
+      ]
+    }
+  ]
 }
