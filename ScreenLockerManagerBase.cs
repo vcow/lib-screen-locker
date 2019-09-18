@@ -14,7 +14,7 @@ namespace Base.ScreenLocker
 	public abstract class ScreenLockerManagerBase : MonoBehaviour, IScreenLockerManager
 	{
 		private Dictionary<LockerType, ScreenLocker> _screenPrefabs;
-		protected abstract bool DontDestroyOnLoad { get; }
+		protected abstract bool ManagerDontDestroyOnLoad { get; }
 
 		private IScreenLocker _currentScreenLocker;
 		private Action _completeCallback;
@@ -29,7 +29,7 @@ namespace Base.ScreenLocker
 		{
 			_screenPrefabs = _lockers.ToDictionary(record => record.LockerType, record => record);
 
-			if (DontDestroyOnLoad)
+			if (ManagerDontDestroyOnLoad)
 			{
 				DontDestroyOnLoad(gameObject);
 			}
