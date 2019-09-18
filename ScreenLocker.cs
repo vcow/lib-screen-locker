@@ -9,7 +9,7 @@ namespace Base.ScreenLocker
 		public abstract void Activate(bool immediately = false);
 		public abstract void Deactivate(bool immediately = false);
 		public abstract ActivatableState ActivatableState { get; protected set; }
-		public abstract event Action<ActivatableState> ActivatableStateChangedEvent;
+		public abstract event ActivatableStateChangedHandler ActivatableStateChangedEvent;
 		public abstract LockerType LockerType { get; }
 	}
 
@@ -40,6 +40,6 @@ namespace Base.ScreenLocker
 			}
 		}
 
-		public override event Action<ActivatableState> ActivatableStateChangedEvent;
+		public override event ActivatableStateChangedHandler ActivatableStateChangedEvent;
 	}
 }
