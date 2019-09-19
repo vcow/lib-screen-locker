@@ -47,13 +47,13 @@ namespace Base.ScreenLocker
 			ReleaseHandlers(false);
 		}
 
-		private void OnActivateLockerHandler(ActivatableState state)
+		private void OnActivateLockerHandler(IActivatable activatable, ActivatableState state)
 		{
 			if (state != ActivatableState.Active) return;
 			ReleaseHandlers(true);
 		}
 
-		private void OnDeactivateLockerHandler(ActivatableState state)
+		private void OnDeactivateLockerHandler(IActivatable activatable, ActivatableState state)
 		{
 			if (state != ActivatableState.Inactive) return;
 			var mb = _currentScreenLocker as MonoBehaviour;

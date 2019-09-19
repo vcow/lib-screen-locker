@@ -37,7 +37,7 @@ namespace Base.ScreenLocker
 			{
 				if (value == _activatableState) return;
 				_activatableState = value;
-				ActivatableStateChangedEvent?.Invoke(_activatableState);
+				ActivatableStateChangedEvent?.Invoke(this, _activatableState);
 			}
 		}
 
