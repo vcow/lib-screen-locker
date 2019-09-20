@@ -1,6 +1,7 @@
 using System.Collections;
 using Base.Activatable;
 using Base.ScreenLocker;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -11,11 +12,12 @@ namespace Sample
 	{
 		private bool _isStarted;
 		private CanvasGroup _canvasGroup;
-		private Coroutine _fadeRoutine;
+		private Tween _tween;
 
 		private void Awake()
 		{
 			_canvasGroup = GetComponent<CanvasGroup>();
+			_canvasGroup.interactable = false;
 			_canvasGroup.alpha = 0;
 		}
 
@@ -25,12 +27,10 @@ namespace Sample
 			ValidateState();
 		}
 
-		private void OnDestroy()
+		protected override void OnDestroy()
 		{
-			if (_fadeRoutine != null)
-			{
-				StopCoroutine(_fadeRoutine);
-			}
+			_tween?.Kill();
+			base.OnDestroy();
 		}
 
 		public override void Activate(bool immediately = false)
@@ -51,11 +51,8 @@ namespace Sample
 		{
 			if (!_isStarted) return;
 
-			if (_fadeRoutine != null)
-			{
-				StopCoroutine(_fadeRoutine);
-				_fadeRoutine = null;
-			}
+			_tween?.Kill();
+			_tween = null;
 
 			switch (ActivatableState)
 			{
@@ -66,40 +63,22 @@ namespace Sample
 					_canvasGroup.alpha = 0;
 					break;
 				case ActivatableState.ToActive:
-					_fadeRoutine = StartCoroutine(FadeRoutine(0.01f));
+					_tween = _canvasGroup.DOFade(1, 1).OnComplete(() =>
+					{
+						_tween = null;
+						_canvasGroup.interactable = true;
+						ActivatableState = ActivatableState.Active;
+					});
 					break;
 				case ActivatableState.ToInactive:
-					_fadeRoutine = StartCoroutine(FadeRoutine(-0.01f));
+					_canvasGroup.interactable = false;
+					_tween = _canvasGroup.DOFade(0, 1).OnComplete(() =>
+					{
+						_tween = null;
+						ActivatableState = ActivatableState.Inactive;
+					});
 					break;
 			}
-		}
-
-		private IEnumerator FadeRoutine(float increment)
-		{
-			for (;;)
-			{
-				var newAlpha = _canvasGroup.alpha + increment;
-				if (newAlpha > 1)
-				{
-					Assert.IsTrue(ActivatableState == ActivatableState.ToActive);
-					_canvasGroup.alpha = 1;
-					ActivatableState = ActivatableState.Active;
-					break;
-				}
-
-				if (newAlpha < 0)
-				{
-					Assert.IsTrue(ActivatableState == ActivatableState.ToInactive);
-					_canvasGroup.alpha = 0;
-					ActivatableState = ActivatableState.Inactive;
-					break;
-				}
-
-				_canvasGroup.alpha = newAlpha;
-				yield return null;
-			}
-
-			_fadeRoutine = null;
 		}
 	}
 }
