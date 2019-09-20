@@ -41,6 +41,18 @@ namespace Base.ScreenLocker
 			}
 		}
 
+		protected virtual void OnDestroy()
+		{
+			if (ActivatableStateChangedEvent != null)
+			{
+				// ReSharper disable once PossibleInvalidCastExceptionInForeachLoop
+				foreach (ActivatableStateChangedHandler handler in ActivatableStateChangedEvent.GetInvocationList())
+				{
+					ActivatableStateChangedEvent -= handler;
+				}
+			}
+		}
+
 		public override event ActivatableStateChangedHandler ActivatableStateChangedEvent;
 	}
 }
