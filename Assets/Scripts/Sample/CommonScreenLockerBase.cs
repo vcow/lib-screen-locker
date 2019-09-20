@@ -1,4 +1,3 @@
-using System.Collections;
 using Base.Activatable;
 using Base.ScreenLocker;
 using DG.Tweening;
