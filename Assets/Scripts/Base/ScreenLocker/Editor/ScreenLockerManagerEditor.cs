@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine;
@@ -30,3 +31,4 @@ namespace Base.ScreenLocker.Editor
 		}
 	}
 }
+#endif
