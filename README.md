@@ -1,3 +1,4 @@
+Was moved to WindowManager!
 # Screen locker
 Deploy with: git subtree push --prefix Assets/Scripts/Base/ScreenLocker origin upm  
 Destination: https://github.com/vcow/lib-screen-locker.git  
