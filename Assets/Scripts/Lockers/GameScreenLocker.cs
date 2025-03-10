@@ -1,15 +1,16 @@
-using Plugins.vcow.ScreenLocker;
 using UnityEngine;
 
 namespace Lockers
 {
 	public class GameScreenLocker : CommonScreenLockerBase
 	{
-		public override LockerType LockerType => LockerType.GameLoader;
+		public const string Key = "GameLoader";
 
-		public override void Activate(bool immediately = false)
+		public override string LockerKey => Key;
+
+		public override void Activate(object[] args = null, bool immediately = false)
 		{
-			base.Activate(true);
+			base.Activate(args, true);
 		}
 
 		~GameScreenLocker()

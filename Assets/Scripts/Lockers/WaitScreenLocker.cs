@@ -1,11 +1,12 @@
-using Plugins.vcow.ScreenLocker;
 using UnityEngine;
 
 namespace Lockers
 {
 	public class WaitScreenLocker : CommonScreenLockerBase
 	{
-		public override LockerType LockerType => LockerType.BusyWait;
+		public const string Key = "BusyWait";
+
+		public override string LockerKey => Key;
 
 		~WaitScreenLocker()
 		{

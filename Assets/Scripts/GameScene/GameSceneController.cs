@@ -1,4 +1,5 @@
 using System.Collections;
+using Lockers;
 using Plugins.vcow.ScreenLocker;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -16,7 +17,7 @@ namespace GameScene
 		{
 			if (_screenLockerManager.IsLocked)
 			{
-				_screenLockerManager.Unlock(Init);
+				_screenLockerManager.Unlock(completeCallback: Init);
 			}
 			else
 			{
@@ -24,21 +25,20 @@ namespace GameScene
 			}
 		}
 
-		private void Init(LockerType lockerType = LockerType.Undefined)
+		private void Init(string key = null)
 		{
 		}
 
 		public void OnGoBack()
 		{
 			Assert.IsFalse(_screenLockerManager.IsLocked);
-			_screenLockerManager.Lock(LockerType.SceneLoader, () =>
-				_sceneLoader.LoadSceneAsync("StartScene"));
+			_screenLockerManager.Lock(SceneScreenLocker.Key, () => _sceneLoader.LoadSceneAsync("StartScene"));
 		}
 
 		public void OnWaitButton()
 		{
 			Assert.IsFalse(_screenLockerManager.IsLocked);
-			_screenLockerManager.Lock(LockerType.BusyWait, () => StartCoroutine(Unlock(3)));
+			_screenLockerManager.Lock("BusyWait", () => StartCoroutine(Unlock(3)));
 		}
 
 		private IEnumerator Unlock(float delaySec)

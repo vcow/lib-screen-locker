@@ -4,6 +4,6 @@ namespace Plugins.vcow.ScreenLocker
 {
 	public interface IScreenLockerSettings
 	{
-		IReadOnlyList<BaseScreenLocker> ScreenLockers { get; }
+		IReadOnlyList<ScreenLockerBase> ScreenLockers { get; }
 	}
 }

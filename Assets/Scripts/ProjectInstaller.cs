@@ -35,7 +35,7 @@ public class ProjectInstaller : MonoInstaller<ProjectInstaller>
 		}
 	}
 
-	private void InstantiateScreenLockerHook(BaseScreenLocker locker)
+	private void InstantiateScreenLockerHook(ScreenLockerBase locker)
 	{
 		Container.Inject(locker);
 	}

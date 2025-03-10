@@ -6,7 +6,7 @@ using UnityEngine.Assertions;
 namespace Lockers
 {
 	[RequireComponent(typeof(CanvasGroup))]
-	public abstract class CommonScreenLockerBase : BaseScreenLocker
+	public abstract class CommonScreenLockerBase : ScreenLockerBase
 	{
 		private bool _isStarted;
 		private CanvasGroup _canvasGroup;
@@ -32,9 +32,9 @@ namespace Lockers
 			base.OnDestroy();
 		}
 
-		public override void Activate(bool immediately = false)
+		public override void Activate(object[] args = null, bool immediately = false)
 		{
-			Assert.IsFalse(State == ScreenLockerState.Active || State == ScreenLockerState.ToActive);
+			Assert.IsFalse(State is ScreenLockerState.Active or ScreenLockerState.ToActive);
 			State = immediately ? ScreenLockerState.Active : ScreenLockerState.ToActive;
 			if (!ValidateState() && immediately)
 			{

@@ -1,11 +1,12 @@
-using Plugins.vcow.ScreenLocker;
 using UnityEngine;
 
 namespace Lockers
 {
 	public class SceneScreenLocker : CommonScreenLockerBase
 	{
-		public override LockerType LockerType => LockerType.SceneLoader;
+		public const string Key = "SceneLoader";
+
+		public override string LockerKey => Key;
 
 		~SceneScreenLocker()
 		{

@@ -8,12 +8,12 @@ namespace Plugins.vcow.ScreenLocker
 {
 	public sealed class ScreenLockerManager : IScreenLockerManager, IDisposable
 	{
-		public delegate void InstantiateScreenLockerHook(BaseScreenLocker locker);
+		public delegate void InstantiateScreenLockerHook(ScreenLockerBase locker);
 
-		private readonly Dictionary<LockerType, BaseScreenLocker> _screenLockerPrefabs;
-		private readonly Dictionary<LockerType, BaseScreenLocker> _activeLockers = new();
-		private readonly Dictionary<BaseScreenLocker, Action> _lockCompleteCallbacks = new();
-		private readonly Dictionary<BaseScreenLocker, Action<LockerType>> _unlockCompleteCallbacks = new();
+		private readonly Dictionary<string, ScreenLockerBase> _screenLockerPrefabs;
+		private readonly Dictionary<string, ScreenLockerBase> _activeLockers = new();
+		private readonly Dictionary<ScreenLockerBase, Action> _lockCompleteCallbacks = new();
+		private readonly Dictionary<ScreenLockerBase, Action<string>> _unlockCompleteCallbacks = new();
 
 		private bool? _isLocked;
 		private InstantiateScreenLockerHook _instantiateScreenLockerHook;
@@ -23,7 +23,7 @@ namespace Plugins.vcow.ScreenLocker
 			_instantiateScreenLockerHook = instantiateScreenLockerHook;
 
 			_screenLockerPrefabs = settings.ScreenLockers != null
-				? settings.ScreenLockers.GroupBy(record => record.LockerType)
+				? settings.ScreenLockers.GroupBy(record => record.LockerKey)
 					.Select(lockers =>
 					{
 						var locker = lockers.First();
@@ -32,13 +32,13 @@ namespace Plugins.vcow.ScreenLocker
 						if (numLockers > 1)
 						{
 							Debug.LogErrorFormat("There are {0} lockers, specified for the {1} type.",
-								numLockers, locker.LockerType);
+								numLockers, locker.LockerKey);
 						}
 #endif
 						return locker;
 					})
-					.ToDictionary(locker => locker.LockerType)
-				: new Dictionary<LockerType, BaseScreenLocker>();
+					.ToDictionary(locker => locker.LockerKey)
+				: new Dictionary<string, ScreenLockerBase>();
 		}
 
 		void IDisposable.Dispose()
@@ -58,7 +58,7 @@ namespace Plugins.vcow.ScreenLocker
 			_unlockCompleteCallbacks.Clear();
 		}
 
-		private void OnLockerStateChanged(BaseScreenLocker locker, ScreenLockerState state)
+		private void OnLockerStateChanged(ScreenLockerBase locker, ScreenLockerState state)
 		{
 			switch (state)
 			{
@@ -74,15 +74,15 @@ namespace Plugins.vcow.ScreenLocker
 				case ScreenLockerState.Inactive: // unlocked
 					locker.StateChangedEvent -= OnLockerStateChanged;
 
-					if (_activeLockers.TryGetValue(locker.LockerType, out var activeLocker) &&
+					if (_activeLockers.TryGetValue(locker.LockerKey, out var activeLocker) &&
 					    activeLocker == locker)
 					{
-						_activeLockers.Remove(locker.LockerType);
+						_activeLockers.Remove(locker.LockerKey);
 					}
 
 					if (_unlockCompleteCallbacks.Remove(locker, out var unlockCallback))
 					{
-						unlockCallback.Invoke(locker.LockerType);
+						unlockCallback.Invoke(locker.LockerKey);
 					}
 
 					Object.Destroy(locker.gameObject);
@@ -92,9 +92,9 @@ namespace Plugins.vcow.ScreenLocker
 			}
 		}
 
-		public void SetScreenLocker(LockerType type, BaseScreenLocker baseScreenLockerPrefab)
+		public void SetScreenLocker(ScreenLockerBase screenLockerBasePrefab)
 		{
-			_screenLockerPrefabs[type] = baseScreenLockerPrefab;
+			_screenLockerPrefabs[screenLockerBasePrefab.LockerKey] = screenLockerBasePrefab;
 		}
 
 		// 	IScreenLockerManager
@@ -113,21 +113,21 @@ namespace Plugins.vcow.ScreenLocker
 
 		public event IsLockedChangedHandler IsLockedChangedEvent;
 
-		public void Lock(LockerType type, Action completeCallback)
+		public void Lock(string key, Action completeCallback = null, object[] args = null)
 		{
-			if (_activeLockers.TryGetValue(type, out var oldLocker))
+			if (_activeLockers.TryGetValue(key, out var oldLocker))
 			{
 				oldLocker.Force();
 
 				oldLocker.StateChangedEvent -= OnLockerStateChanged;
 				Object.Destroy(oldLocker.gameObject);
 
-				if (_activeLockers.Remove(type))
+				if (_activeLockers.Remove(key))
 				{
 					// This locker should have be removed from the active lockers in the OnLockerStateChanged handler,
 					// if not then he isn't send the ActivatableStateChangedEvent during the Force() call.
 					Debug.LogWarningFormat("The locker of type {0} hasn't change his activatable state during the " +
-					                       "Force() action.", oldLocker.LockerType);
+					                       "Force() action.", oldLocker.LockerKey);
 				}
 
 				if (_lockCompleteCallbacks.Remove(oldLocker, out var oldLockCallback))
@@ -137,13 +137,13 @@ namespace Plugins.vcow.ScreenLocker
 
 				if (_unlockCompleteCallbacks.Remove(oldLocker, out var oldUnlockCallback))
 				{
-					oldUnlockCallback.Invoke(oldLocker.LockerType);
+					oldUnlockCallback.Invoke(oldLocker.LockerKey);
 				}
 			}
 
-			if (!_screenLockerPrefabs.TryGetValue(type, out var prefab))
+			if (!_screenLockerPrefabs.TryGetValue(key, out var prefab))
 			{
-				Debug.LogErrorFormat("There is no screen prefab for the {0} lock type.", type);
+				Debug.LogErrorFormat("There is no screen prefab for the {0} lock type.", key);
 				IsLocked = _activeLockers.Count > 0;
 				completeCallback?.Invoke();
 				return;
@@ -153,7 +153,7 @@ namespace Plugins.vcow.ScreenLocker
 			_instantiateScreenLockerHook?.Invoke(locker);
 			Object.DontDestroyOnLoad(locker.gameObject);
 
-			_activeLockers.Add(type, locker);
+			_activeLockers.Add(key, locker);
 
 			IsLocked = true;
 
@@ -165,7 +165,7 @@ namespace Plugins.vcow.ScreenLocker
 				}
 
 				locker.StateChangedEvent += OnLockerStateChanged;
-				locker.Activate();
+				locker.Activate(args: args);
 			}
 			else if (locker.State == ScreenLockerState.Active)
 			{
@@ -173,17 +173,17 @@ namespace Plugins.vcow.ScreenLocker
 			}
 			else
 			{
-				Debug.LogErrorFormat("The locker {0} is in wrong initial state {1}.", locker.LockerType, locker.State);
+				Debug.LogErrorFormat("The locker {0} is in wrong initial state {1}.", locker.LockerKey, locker.State);
 				completeCallback?.Invoke();
 			}
 		}
 
-		public void Unlock(Action<LockerType> completeCallback, LockerType? type = null)
+		public void Unlock(string key = null, Action<string> completeCallback = null)
 		{
-			var unlocked = new List<BaseScreenLocker>();
-			if (type.HasValue)
+			var unlocked = new List<ScreenLockerBase>();
+			if (!string.IsNullOrEmpty(key))
 			{
-				if (_activeLockers.TryGetValue(type.Value, out var locker))
+				if (_activeLockers.TryGetValue(key, out var locker))
 				{
 					unlocked.Add(locker);
 				}
@@ -195,7 +195,7 @@ namespace Plugins.vcow.ScreenLocker
 
 			if (unlocked.Count <= 0)
 			{
-				completeCallback?.Invoke(LockerType.Undefined);
+				completeCallback?.Invoke(string.Empty);
 				return;
 			}
 
@@ -211,7 +211,7 @@ namespace Plugins.vcow.ScreenLocker
 						// OnLockerStateChanged handler, if not then locker isn't send ActivatableStateChanged event
 						// during the Force() call.
 						Debug.LogWarningFormat("The locker of type {0} hasn't change his activatable state during " +
-						                       "the Force() action.", locker.LockerType);
+						                       "the Force() action.", locker.LockerKey);
 						_lockCompleteCallbacks.Remove(locker);
 						lockCallback.Invoke();
 					}
@@ -230,14 +230,14 @@ namespace Plugins.vcow.ScreenLocker
 				else
 				{
 					Debug.LogErrorFormat("The locker {0} that is been unlocked wasn't switched to the Active state.",
-						locker.LockerType);
+						locker.LockerKey);
 
-					completeCallback?.Invoke(locker.LockerType);
+					completeCallback?.Invoke(locker.LockerKey);
 
 					locker.StateChangedEvent -= OnLockerStateChanged;
 					Object.Destroy(locker.gameObject);
 
-					_activeLockers.Remove(locker.LockerType);
+					_activeLockers.Remove(locker.LockerKey);
 					_lockCompleteCallbacks.Remove(locker);
 					_unlockCompleteCallbacks.Remove(locker);
 				}

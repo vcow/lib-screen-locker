@@ -13,7 +13,7 @@ namespace InitialScene
 
 		private void Start()
 		{
-			_screenLockerManager.Lock(LockerType.GameLoader, () => StartCoroutine(Init()));
+			_screenLockerManager.Lock("GameLoader", () => StartCoroutine(Init()));
 		}
 
 		private IEnumerator Init()
