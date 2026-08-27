@@ -197,7 +197,7 @@ namespace Plugins.vcow.ScreenLocker
 
 			if (unlocked.Count <= 0)
 			{
-				completeCallback?.Invoke(Array.Empty<string>());
+				Debug.LogWarning("There is no active screen lockers found.");
 				return;
 			}
 
@@ -247,7 +247,10 @@ namespace Plugins.vcow.ScreenLocker
 			}
 
 			IsLocked = _activeLockers.Count > 0;
-			completeCallback?.Invoke(unlockedKeys);
+			if (unlockedKeys.Any())
+			{
+				completeCallback?.Invoke(unlockedKeys);
+			}
 		}
 
 		// 	\IScreenLockerManager
