@@ -13,7 +13,7 @@ namespace Plugins.vcow.ScreenLocker
 		private readonly Dictionary<string, ScreenLockerBase> _screenLockerPrefabs;
 		private readonly Dictionary<string, ScreenLockerBase> _activeLockers = new();
 		private readonly Dictionary<ScreenLockerBase, Action> _lockCompleteCallbacks = new();
-		private readonly Dictionary<ScreenLockerBase, Action<string>> _unlockCompleteCallbacks = new();
+		private readonly Dictionary<ScreenLockerBase, Action<IReadOnlyList<string>>> _unlockCompleteCallbacks = new();
 
 		private bool? _isLocked;
 		private InstantiateScreenLockerHook _instantiateScreenLockerHook;
@@ -84,7 +84,7 @@ namespace Plugins.vcow.ScreenLocker
 					Object.Destroy(locker.gameObject);
 
 					IsLocked = _activeLockers.Count > 0;
-					unlockCallback?.Invoke(locker.LockerKey);
+					unlockCallback?.Invoke(new[] { locker.LockerKey });
 					break;
 			}
 		}
@@ -106,6 +106,11 @@ namespace Plugins.vcow.ScreenLocker
 				_isLocked = value;
 				IsLockedChangedEvent?.Invoke(this, value);
 			}
+		}
+
+		public bool IsLockedBy(string key)
+		{
+			return IsLocked && _activeLockers.ContainsKey(key);
 		}
 
 		public event IsLockedChangedHandler IsLockedChangedEvent;
@@ -134,7 +139,7 @@ namespace Plugins.vcow.ScreenLocker
 
 				if (_unlockCompleteCallbacks.Remove(oldLocker, out var oldUnlockCallback))
 				{
-					oldUnlockCallback.Invoke(oldLocker.LockerKey);
+					oldUnlockCallback.Invoke(new[] { oldLocker.LockerKey });
 				}
 			}
 
@@ -175,7 +180,7 @@ namespace Plugins.vcow.ScreenLocker
 			}
 		}
 
-		public void Unlock(string key = null, Action<string> completeCallback = null)
+		public void Unlock(string key = null, Action<IReadOnlyList<string>> completeCallback = null)
 		{
 			var unlocked = new List<ScreenLockerBase>();
 			if (!string.IsNullOrEmpty(key))
@@ -192,11 +197,11 @@ namespace Plugins.vcow.ScreenLocker
 
 			if (unlocked.Count <= 0)
 			{
-				completeCallback?.Invoke(string.Empty);
+				completeCallback?.Invoke(Array.Empty<string>());
 				return;
 			}
 
-			var unlockedKeys = completeCallback != null ? new List<string>() : null;
+			var unlockedKeys = new List<string>();
 			foreach (var locker in unlocked)
 			{
 				if (locker.State != ScreenLockerState.Active)
@@ -230,7 +235,7 @@ namespace Plugins.vcow.ScreenLocker
 					Debug.LogErrorFormat("The locker {0} that is been unlocked wasn't switched to the Active state.",
 						locker.LockerKey);
 
-					unlockedKeys?.Add(locker.LockerKey);
+					unlockedKeys.Add(locker.LockerKey);
 
 					locker.StateChangedEvent -= OnLockerStateChanged;
 					Object.Destroy(locker.gameObject);
@@ -242,7 +247,7 @@ namespace Plugins.vcow.ScreenLocker
 			}
 
 			IsLocked = _activeLockers.Count > 0;
-			unlockedKeys?.ForEach(completeCallback);
+			completeCallback?.Invoke(unlockedKeys);
 		}
 
 		// 	\IScreenLockerManager

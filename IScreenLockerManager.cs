@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Plugins.vcow.ScreenLocker
 {
@@ -13,6 +14,13 @@ namespace Plugins.vcow.ScreenLocker
 		/// The flag indicates that some kind of blocking is enabled.
 		/// </summary>
 		bool IsLocked { get; }
+
+		/// <summary>
+		/// Check if blocked with the specified type of blocker.
+		/// </summary>
+		/// <param name="key">The type of blocking.</param>
+		/// <returns><code>true</code> if screen is blocked by specified type of blocker.</returns>
+		bool IsLockedBy(string key);
 
 		/// <summary>
 		/// Lock state change event.
@@ -32,7 +40,7 @@ namespace Plugins.vcow.ScreenLocker
 		/// </summary>
 		/// <param name="key">A type of the blocking to disable, if null all blocks are disabled.</param>
 		/// <param name="completeCallback">A callback, which call when unblocking is finished.</param>
-		void Unlock(string key = null, Action<string> completeCallback = null);
+		void Unlock(string key = null, Action<IReadOnlyList<string>> completeCallback = null);
 
 		/// <summary>
 		/// Set a screen locker for the specified type.
