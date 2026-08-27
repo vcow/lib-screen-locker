@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Lockers;
 using Plugins.vcow.ScreenLocker;
 using UnityEngine;
@@ -24,7 +25,7 @@ namespace StartScene
 			}
 		}
 
-		private void Init(string key = null)
+		private void Init(IReadOnlyList<string> keys = null)
 		{
 		}
 

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using Lockers;
 using Plugins.vcow.ScreenLocker;
 using UnityEngine;
@@ -25,7 +26,7 @@ namespace GameScene
 			}
 		}
 
-		private void Init(string key = null)
+		private void Init(IReadOnlyList<string> keys = null)
 		{
 		}
 
@@ -45,7 +46,7 @@ namespace GameScene
 		{
 			Assert.IsTrue(delaySec > 0f);
 			yield return new WaitForSeconds(delaySec);
-			_screenLockerManager.Unlock(null);
+			_screenLockerManager.Unlock();
 		}
 	}
 }
