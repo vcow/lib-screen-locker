@@ -115,7 +115,7 @@ namespace Plugins.vcow.ScreenLocker
 
 		public event IsLockedChangedHandler IsLockedChangedEvent;
 
-		public void Lock(string key, Action completeCallback = null, object[] args = null)
+		public bool Lock(string key, Action completeCallback = null, object[] args = null)
 		{
 			if (_activeLockers.TryGetValue(key, out var oldLocker))
 			{
@@ -148,7 +148,7 @@ namespace Plugins.vcow.ScreenLocker
 				Debug.LogErrorFormat("There is no screen prefab for the {0} lock type.", key);
 				IsLocked = _activeLockers.Count > 0;
 				completeCallback?.Invoke();
-				return;
+				return false;
 			}
 
 			var locker = Object.Instantiate(prefab);
@@ -178,9 +178,11 @@ namespace Plugins.vcow.ScreenLocker
 				Debug.LogErrorFormat("The locker {0} is in wrong initial state {1}.", locker.LockerKey, locker.State);
 				completeCallback?.Invoke();
 			}
+
+			return true;
 		}
 
-		public void Unlock(string key = null, Action<IReadOnlyList<string>> completeCallback = null)
+		public bool Unlock(string key = null, Action<IReadOnlyList<string>> completeCallback = null)
 		{
 			var unlocked = new List<ScreenLockerBase>();
 			if (!string.IsNullOrEmpty(key))
@@ -195,10 +197,11 @@ namespace Plugins.vcow.ScreenLocker
 				unlocked.AddRange(_activeLockers.Values);
 			}
 
-			if (unlocked.Count <= 0)
+			if (!unlocked.Any())
 			{
-				Debug.LogWarning("There is no active screen lockers found.");
-				return;
+				Debug.LogError("There is no active screen lockers found.");
+				completeCallback?.Invoke(Array.Empty<string>());
+				return false;
 			}
 
 			var unlockedKeys = new List<string>();
@@ -251,6 +254,8 @@ namespace Plugins.vcow.ScreenLocker
 			{
 				completeCallback?.Invoke(unlockedKeys);
 			}
+
+			return true;
 		}
 
 		// 	\IScreenLockerManager

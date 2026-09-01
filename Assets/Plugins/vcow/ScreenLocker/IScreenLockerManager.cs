@@ -33,14 +33,16 @@ namespace Plugins.vcow.ScreenLocker
 		/// <param name="key">The type of blocking.</param>
 		/// <param name="completeCallback">A callback, which call when blocking is finished.</param>
 		/// <param name="args">Additional args to send to the locker.</param>
-		void Lock(string key, Action completeCallback = null, object[] args = null);
+		/// <returns><code>true</code> if lock proceeded.</returns>
+		bool Lock(string key, Action completeCallback = null, object[] args = null);
 
 		/// <summary>
 		/// Disable a current blocking.
 		/// </summary>
 		/// <param name="key">A type of the blocking to disable, if null all blocks are disabled.</param>
 		/// <param name="completeCallback">A callback, which call when unblocking is finished.</param>
-		void Unlock(string key = null, Action<IReadOnlyList<string>> completeCallback = null);
+		/// <returns><code>true</code> if unlock proceeded.</returns>
+		bool Unlock(string key = null, Action<IReadOnlyList<string>> completeCallback = null);
 
 		/// <summary>
 		/// Set a screen locker for the specified type.
